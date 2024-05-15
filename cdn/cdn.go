@@ -4,9 +4,10 @@ import (
 	"context"
 	"github.com/run-bigpig/cloud-sdk/cdn/sp/huawei"
 	"github.com/run-bigpig/cloud-sdk/cdn/sp/tencent"
+	"github.com/run-bigpig/cloud-sdk/cdn/types"
 )
 
-type CdnSdk interface {
+type Cdn interface {
 	GetSdkName() string
 	CreateDomain(req *types.CreateDomainRequest) error                                                                               // 创建域名
 	UpdateDomain(req *types.UpdateDomainRequest) error                                                                               // 更新域名
@@ -37,7 +38,7 @@ type Config struct {
 	Tencent tencent.Config
 }
 
-func NewCdnSdk(ctx context.Context, config interface{}) CdnSdk {
+func NewCdn(ctx context.Context, config interface{}) Cdn {
 	switch t := config.(type) {
 	case huawei.Config:
 		return huawei.NewHuaweiSdkClient(ctx, &t)
