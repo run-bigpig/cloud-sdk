@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/run-bigpig/cloud-sdk/cdn/consts"
 	"github.com/run-bigpig/cloud-sdk/cdn/entity"
+	"github.com/run-bigpig/cloud-sdk/cdn/types"
 	"github.com/run-bigpig/cloud-sdk/utils"
 	tencentsdk "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
