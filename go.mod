@@ -1,6 +1,6 @@
 module github.com/run-bigpig/cloud-sdk
 
-go 1.22.0
+go 1.21
 
 require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.95
