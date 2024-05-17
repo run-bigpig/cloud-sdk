@@ -313,17 +313,18 @@ type (
 	}
 
 	UserAccessRegionDistributionRequest struct {
-		Domain      string `json:"domain"`       // 域名
-		StartTime   int64  `json:"start_time"`   // 开始时间戳
-		EndTime     int64  `json:"end_time"`     // 结束时间
-		Metric      int64  `json:"metric"`       // 指标 0 流量 2请求数
-		Area        int64  `json:"area"`         // 区域 0 中国大陆 1 中国境外
-		Product     int64  `json:"product"`      // 产品 0 cdn/ 1 ecdn
-		ChannelType int64  `json:"channel_type"` // 0 web 1 download 2 音视频 3 全站
+		Domains     []string `json:"domain"`       // 域名
+		StartTime   int64    `json:"start_time"`   // 开始时间戳
+		EndTime     int64    `json:"end_time"`     // 结束时间
+		Metric      int64    `json:"metric"`       // 指标 0 流量 2请求数
+		Area        int64    `json:"area"`         // 区域 0 中国大陆 1 中国境外
+		Product     int64    `json:"product"`      // 产品 0 cdn/ 1 ecdn
+		ChannelType int64    `json:"channel_type"` // 0 web 1 download 2 音视频 3 全站
 	}
 
-	UserAccessRegionDistributionResponse struct {
+	RegionDistribution struct {
 		MainLandValue int64 `json:"mainland_value"` //境内值
 		OverSeaValue  int64 `json:"oversea_value"`  // 境外值
 	}
+	UserAccessRegionDistributionResponse map[string]*RegionDistribution
 )

@@ -1387,31 +1387,32 @@ func (t *Tencent) UserAccessRegionDistribution(req *types.UserAccessRegionDistri
 	request.StartTime = common.StringPtr(utils.FormatTimeWithTimezone(req.StartTime, "Asia/Shanghai"))
 	request.EndTime = common.StringPtr(utils.FormatTimeWithTimezone(req.EndTime, "Asia/Shanghai"))
 	request.Metric = common.StringPtr("district")
-	request.Domains = common.StringPtrs([]string{req.Domain})
+	request.Domains = common.StringPtrs(req.Domains)
 	request.Area = common.StringPtr(getAreaCode(req.Area))
 	request.Filter = common.StringPtr(getDataAccessMetricType(req.Metric))
-	request.Detail = common.BoolPtr(false)
+	request.Detail = common.BoolPtr(true)
 	request.Product = common.StringPtr(getProductType(req.Product))
 	response, err := t.client.ListTopData(request)
-	responseData := types.UserAccessRegionDistributionResponse{}
+	responseData := make(types.UserAccessRegionDistributionResponse)
 	if err != nil {
 		return responseData, err
 	}
 	for _, v := range response.Response.Data {
+		responseData[*v.Resource] = &types.RegionDistribution{}
 		for _, vv := range v.DetailData {
 			switch req.Area {
 			case consts.AreaCodeChinaMainland:
 				if *vv.Name == "-1" {
-					responseData.OverSeaValue += int64(*vv.Value)
+					responseData[*v.Resource].OverSeaValue += int64(*vv.Value)
 					continue
 				}
-				responseData.MainLandValue += int64(*vv.Value)
+				responseData[*v.Resource].MainLandValue += int64(*vv.Value)
 			case consts.AreaCodeOversea:
 				if *vv.Name == "4460" {
-					responseData.MainLandValue += int64(*vv.Value)
+					responseData[*v.Resource].MainLandValue += int64(*vv.Value)
 					continue
 				}
-				responseData.OverSeaValue += int64(*vv.Value)
+				responseData[*v.Resource].OverSeaValue += int64(*vv.Value)
 			default:
 				continue
 			}

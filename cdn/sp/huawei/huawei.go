@@ -1296,14 +1296,14 @@ func (h *Huawei) UserAccessRegionDistribution(req *types.UserAccessRegionDistrib
 		Action:     getAccessDataStaticType(consts.DataStaticTypeSum),
 		StartTime:  req.StartTime * 1000,
 		EndTime:    req.EndTime * 1000,
-		DomainName: req.Domain,
+		DomainName: strings.Join(req.Domains, ","),
 		StatType:   getDataAccessMetricType(req.Metric),
 		Interval:   utils.Int64Ptr(300),
-		GroupBy:    utils.StringPtr("country"),
+		GroupBy:    utils.StringPtr("domain,country"),
 		Country:    utils.StringPtr("all"),
 	}
 	response, err := h.client.ShowDomainLocationStats(request)
-	responseData := types.UserAccessRegionDistributionResponse{}
+	responseData := make(types.UserAccessRegionDistributionResponse)
 	if err != nil {
 		return responseData, err
 	}
@@ -1311,19 +1311,22 @@ func (h *Huawei) UserAccessRegionDistribution(req *types.UserAccessRegionDistrib
 		return responseData, errors.New("show domain location stats error")
 	}
 	if response.Result != nil {
-		for resultCountry, v := range response.Result {
+		for domain, v := range response.Result {
 			jsonstr, _ := json.Marshal(v)
-			jsonData := make(map[string]int64)
+			jsonData := make(map[string]map[string]int64)
 			err = json.Unmarshal(jsonstr, &jsonData)
 			if err != nil {
 				return responseData, err
 			}
-			if metrics, ok := jsonData[request.StatType]; ok {
-				if resultCountry == "cn" {
-					responseData.MainLandValue += metrics
-					continue
+			responseData[domain] = &types.RegionDistribution{}
+			for resultCountry, metric := range jsonData {
+				if value, ok := metric[request.StatType]; ok {
+					if resultCountry == "cn" {
+						responseData[domain].MainLandValue += value
+						continue
+					}
+					responseData[domain].OverSeaValue += value
 				}
-				responseData.OverSeaValue += metrics
 			}
 		}
 	}
