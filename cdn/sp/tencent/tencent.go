@@ -1317,15 +1317,15 @@ func (t *Tencent) ListTopUrlDataStatic(req *types.ListTopUrlDataStaticRequest) (
 	return responseData, nil
 }
 
-// DomainAccessTotalFlux 获取域名总流量
-func (t *Tencent) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest) (types.DataTotalFluxResponse, error) {
+// DomainAccessTotalData 获取域名总流量
+func (t *Tencent) DomainAccessTotalData(req *types.DomainAccessTotalDataRequest) (types.DataTotalDataResponse, error) {
 	request := tencentsdk.NewDescribeCdnDataRequest()
 	if req.TimeZone == nil {
 		req.TimeZone = common.StringPtr("Asia/Shanghai")
 	}
 	request.StartTime = common.StringPtr(utils.FormatTimeWithTimezone(req.StartTime, *req.TimeZone))
 	request.EndTime = common.StringPtr(utils.FormatTimeWithTimezone(req.EndTime, *req.TimeZone))
-	request.Metric = common.StringPtr("flux")
+	request.Metric = common.StringPtr(getDataAccessMetricType(req.Metric))
 	request.Domains = common.StringPtrs(req.Domains)
 	request.Interval = common.StringPtr("5min")
 	request.Area = common.StringPtr(getAreaCode(req.Area))
@@ -1334,6 +1334,9 @@ func (t *Tencent) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest)
 	request.IpProtocol = common.StringPtr("all")
 	request.Product = common.StringPtr(getProductType(req.Product))
 	request.Detail = common.BoolPtr(true)
+	if strings.Contains(*request.Metric, "xx") {
+		return nil, errors.New("status code not support")
+	}
 	response, err := t.client.DescribeCdnData(request)
 	if err != nil {
 		return nil, err
@@ -1341,10 +1344,10 @@ func (t *Tencent) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest)
 	if len(response.Response.Data) == 0 {
 		return nil, errors.New("data not found")
 	}
-	responseData := make(types.DataTotalFluxResponse)
+	responseData := make(types.DataTotalDataResponse)
 	for _, v := range response.Response.Data {
 		for _, vv := range v.CdnData {
-			if vv.Metric != nil && *vv.Metric == "flux" {
+			if vv.Metric != nil && *vv.Metric == *request.Metric {
 				responseData[*v.Resource] += int64(*vv.SummarizedData.Value)
 			}
 		}
@@ -1352,28 +1355,31 @@ func (t *Tencent) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest)
 	return responseData, nil
 }
 
-// DomainOriginTotalFlux 获取域名回源总流量
-func (t *Tencent) DomainOriginTotalFlux(req *types.DomainOriginTotalFluxRequest) (types.DataTotalFluxResponse, error) {
+// DomainOriginTotalData 获取域名回源总流量
+func (t *Tencent) DomainOriginTotalData(req *types.DomainOriginTotalDataRequest) (types.DataTotalDataResponse, error) {
 	request := tencentsdk.NewDescribeOriginDataRequest()
 	if req.TimeZone == nil {
 		req.TimeZone = common.StringPtr("Asia/Shanghai")
 	}
 	request.StartTime = common.StringPtr(utils.FormatTimeWithTimezone(req.StartTime, *req.TimeZone))
 	request.EndTime = common.StringPtr(utils.FormatTimeWithTimezone(req.EndTime, *req.TimeZone))
-	request.Metric = common.StringPtr("flux")
+	request.Metric = common.StringPtr(getDataOriginMetricType(req.Metric))
 	request.Domains = common.StringPtrs(req.Domains)
 	request.Interval = common.StringPtr("5min")
 	request.Area = common.StringPtr(getAreaCode(req.Area))
 	request.TimeZone = common.StringPtr(convertTimeZone(*req.TimeZone))
 	request.Detail = common.BoolPtr(true)
+	if strings.Contains(*request.Metric, "xx") {
+		return nil, errors.New("status code not support")
+	}
 	response, err := t.client.DescribeOriginData(request)
 	if err != nil {
 		return nil, err
 	}
-	responseData := make(types.DataTotalFluxResponse)
+	responseData := make(types.DataTotalDataResponse)
 	for _, v := range response.Response.Data {
 		for _, vv := range v.OriginData {
-			if vv.Metric != nil && *vv.Metric == "flux" {
+			if vv.Metric != nil && *vv.Metric == *request.Metric {
 				responseData[*v.Resource] = int64(*vv.SummarizedData.Value)
 			}
 		}

@@ -28,8 +28,8 @@ type Cdn interface {
 	DomainAccessDataStatic(req *types.DomainAccessDataStaticRequest) (types.DomainAccessDataStaticResponse, error)                   // 域名访问数据统计信息
 	DomainOriginDataStatic(req *types.DomainOriginDataStaticRequest) (types.DomainOriginDataStaticResponse, error)                   // 域名回源数据统计信息
 	ListTopUrlDataStatic(req *types.ListTopUrlDataStaticRequest) ([]*types.ListTopUrlDataStaticResponse, error)                      // 获取TOP URL访问数据
-	DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest) (types.DataTotalFluxResponse, error)                              // 域名访问总流量
-	DomainOriginTotalFlux(req *types.DomainOriginTotalFluxRequest) (types.DataTotalFluxResponse, error)                              // 域名回源数据总流量
+	DomainAccessTotalData(req *types.DomainAccessTotalDataRequest) (types.DataTotalDataResponse, error)                              // 域名访问总流量
+	DomainOriginTotalData(req *types.DomainOriginTotalDataRequest) (types.DataTotalDataResponse, error)                              // 域名回源数据总流量
 	UserAccessRegionDistribution(req *types.UserAccessRegionDistributionRequest) (types.UserAccessRegionDistributionResponse, error) // 用户访问区域分布
 }
 

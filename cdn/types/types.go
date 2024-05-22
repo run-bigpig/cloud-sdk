@@ -291,24 +291,26 @@ type (
 		Value float64 `json:"value"` // 值
 	}
 
-	DataTotalFluxResponse map[string]int64
+	DataTotalDataResponse map[string]int64
 
-	DomainAccessTotalFluxRequest struct {
+	DomainAccessTotalDataRequest struct {
 		Domains     []string `json:"domain"`       // 域名
 		StartTime   int64    `json:"start_time"`   // 开始时间戳
 		EndTime     int64    `json:"end_time"`     // 结束时间戳
 		Area        int64    `json:"area"`         // 区域 0 中国大陆 1 中国境外
 		Product     int64    `json:"product"`      // 产品 0 cdn/ 1 ecdn
 		ChannelType int64    `json:"channel_type"` // 0 web 1 download 2 音视频 3 全站
+		Metric      int64    `json:"metric"`       // 指标 0 流量 1 带宽 2请求数 3 命中请求数 4命中流量
 		TimeZone    *string  `json:"time_zone"`    // 时区
 	}
 
-	DomainOriginTotalFluxRequest struct {
+	DomainOriginTotalDataRequest struct {
 		Domains     []string `json:"domain"`       // 域名
 		StartTime   int64    `json:"start_time"`   // 开始时间戳
 		EndTime     int64    `json:"end_time"`     // 结束时间戳
 		Area        int64    `json:"area"`         // 区域 0 中国大陆 1 中国境外
 		ChannelType int64    `json:"channel_type"` // 0 web 1 download 2 音视频 3 全站
+		Metric      int64    `json:"metric"`       // 指标 0 回源流量 1 回源带宽 2 回源请求数 3 回源失败数
 		TimeZone    *string  `json:"time_zone"`    // 时区
 	}
 

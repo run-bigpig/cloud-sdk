@@ -1218,17 +1218,20 @@ func (h *Huawei) ListTopUrlDataStatic(req *types.ListTopUrlDataStaticRequest) ([
 	return responseData, nil
 }
 
-// DomainAccessTotalFlux 域名总流量
-func (h *Huawei) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest) (types.DataTotalFluxResponse, error) {
+// DomainAccessTotalData 访问数据总数据
+func (h *Huawei) DomainAccessTotalData(req *types.DomainAccessTotalDataRequest) (types.DataTotalDataResponse, error) {
 	stateRequest := &model.ShowDomainStatsRequest{
 		Action:      "summary",
 		StartTime:   req.StartTime * 1000,
 		EndTime:     req.EndTime * 1000,
 		DomainName:  strings.Join(req.Domains, ","),
-		StatType:    "flux",
+		StatType:    getDataAccessMetricType(req.Metric),
 		Interval:    utils.Int64Ptr(300),
 		GroupBy:     utils.StringPtr("domain"),
 		ServiceArea: utils.StringPtr(getAreaCode(req.Area).Value()),
+	}
+	if strings.Contains(stateRequest.StatType, "status_code") {
+		return nil, errors.New("status_code is not support")
 	}
 	response, err := h.client.ShowDomainStats(stateRequest)
 	if err != nil {
@@ -1237,7 +1240,7 @@ func (h *Huawei) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest) 
 	if response.HttpStatusCode != 200 {
 		return nil, errors.New("show domain stats error")
 	}
-	responseData := make(types.DataTotalFluxResponse)
+	responseData := make(types.DataTotalDataResponse)
 	if response.Result != nil {
 		for resultDomain, v := range response.Result {
 			jsonstr, _ := json.Marshal(v)
@@ -1255,16 +1258,19 @@ func (h *Huawei) DomainAccessTotalFlux(req *types.DomainAccessTotalFluxRequest) 
 	return responseData, nil
 }
 
-// DomainOriginTotalFlux 回源总流量
-func (h *Huawei) DomainOriginTotalFlux(req *types.DomainOriginTotalFluxRequest) (types.DataTotalFluxResponse, error) {
+// DomainOriginTotalData 回源总流量
+func (h *Huawei) DomainOriginTotalData(req *types.DomainOriginTotalDataRequest) (types.DataTotalDataResponse, error) {
 	request := &model.ShowDomainStatsRequest{
 		Action:     "summary",
 		StartTime:  req.StartTime * 1000,
 		EndTime:    req.EndTime * 1000,
 		DomainName: strings.Join(req.Domains, ","),
-		StatType:   "bs_flux",
+		StatType:   getDataOriginMetricType(req.Metric),
 		Interval:   utils.Int64Ptr(300),
 		GroupBy:    utils.StringPtr("domain"),
+	}
+	if strings.Contains(request.StatType, "bs_status_code") {
+		return nil, errors.New("bs_status_code is not support")
 	}
 	response, err := h.client.ShowDomainStats(request)
 	if err != nil {
@@ -1273,7 +1279,7 @@ func (h *Huawei) DomainOriginTotalFlux(req *types.DomainOriginTotalFluxRequest) 
 	if response.HttpStatusCode != 200 {
 		return nil, errors.New("show domain location stats error")
 	}
-	responseData := make(types.DataTotalFluxResponse)
+	responseData := make(types.DataTotalDataResponse)
 	if response.Result != nil {
 		for resultDomain, v := range response.Result {
 			jsonstr, _ := json.Marshal(v)
