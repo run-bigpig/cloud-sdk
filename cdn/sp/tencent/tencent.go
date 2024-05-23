@@ -1338,6 +1338,10 @@ func (t *Tencent) DomainAccessTotalData(req *types.DomainAccessTotalDataRequest)
 	request.IpProtocol = common.StringPtr("all")
 	request.Product = common.StringPtr(getProductType(req.Product))
 	request.Detail = common.BoolPtr(true)
+	request.DataSource = common.StringPtr("log")
+	if req.Area == consts.AreaCodeOversea {
+		request.DataSource = nil
+	}
 	if strings.Contains(*request.Metric, "xx") {
 		return nil, errors.New("status code not support")
 	}
