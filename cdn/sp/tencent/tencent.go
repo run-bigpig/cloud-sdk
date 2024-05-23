@@ -1155,8 +1155,12 @@ func (t *Tencent) DomainAccessDataStatic(req *types.DomainAccessDataStaticReques
 	request.Domains = common.StringPtrs(req.Domains)
 	request.Interval = common.StringPtr(getDataIntervalType(req.Interval))
 	request.Area = common.StringPtr(getAreaCode(req.Area))
-	if req.Area == consts.AreaCodeOversea && req.AreaType == 1 {
-		request.AreaType = common.StringPtr("client")
+	request.DataSource = common.StringPtr("log")
+	if req.Area == consts.AreaCodeOversea {
+		request.DataSource = nil
+		if req.AreaType == 1 {
+			request.AreaType = common.StringPtr("client")
+		}
 	}
 	request.TimeZone = common.StringPtr(convertTimeZone(*req.TimeZone))
 	request.Protocol = common.StringPtr("all")
