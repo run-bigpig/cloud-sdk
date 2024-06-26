@@ -32,6 +32,7 @@ const (
 	HuaWeiSdkName                    = "huawei"
 	TencentSdkName                   = "tencent"
 	KsYunSdkName                     = "ksyun"
+	WangsuSdkName                    = "wangsu"
 )
 const (
 	TypeA = iota
@@ -111,13 +112,14 @@ type (
 	}
 
 	ShowDomainDetailResponse struct {
-		DomainId   string `json:"domain_id"`   // 域名ID
-		Domain     string `json:"domain"`      // 域名
-		AreaCode   int64  `json:"area_code"`   // 加速区域代码  0中国大陆 1境外 2全球
-		Cname      string `json:"cname"`       // CNAME
-		Status     int64  `json:"status"`      // 状态 0部署中 1部署成功 2停止中 3停止成功 4部署失败 5删除中 6已删除
-		CreateTime int64  `json:"create_time"` // 创建时间
-		UpdateTime int64  `json:"update_time"` // 修改时间
+		DomainId    string `json:"domain_id"`    // 域名ID
+		Domain      string `json:"domain"`       // 域名
+		AreaCode    int64  `json:"area_code"`    // 加速区域代码  0中国大陆 1境外 2全球
+		ChannelType int64  `json:"channel_type"` // 业务类型 0 网页 1 下载 2 点播 3 全站加速
+		Cname       string `json:"cname"`        // CNAME
+		Status      int64  `json:"status"`       // 状态 0部署中 1部署成功 2停止中 3停止成功 4部署失败 5删除中 6已删除
+		CreateTime  int64  `json:"create_time"`  // 创建时间
+		UpdateTime  int64  `json:"update_time"`  // 修改时间
 	}
 
 	ShowDomainStatusListRequest struct {

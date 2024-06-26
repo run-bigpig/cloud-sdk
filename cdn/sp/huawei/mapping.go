@@ -649,6 +649,22 @@ func getPrimaryOrBack(t int64) int64 {
 	}
 }
 
+// businessTypeToChannelType 获取业务类型
+func businessTypeToChannelType(t string) int64 {
+	switch t {
+	case "web":
+		return consts.ChannelTypeWeb
+	case "download":
+		return consts.ChannelTypeDownload
+	case "video":
+		return consts.ChannelTypeMedia
+	case "wholeSite":
+		return consts.ChannelTypeHybrid
+	default:
+		return consts.ChannelTypeWeb
+	}
+}
+
 func getDataAccessMetricType(t int64) string {
 	switch t {
 	case consts.DataAccessMetricTypeFlux:

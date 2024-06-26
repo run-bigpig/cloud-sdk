@@ -77,18 +77,22 @@ func (t *Tencent) CreateDomain(req *types.CreateDomainRequest) error {
 	detail, err := t.ShowDomainDetail(&types.ShowDomainDetailRequest{Domain: req.Domain})
 	if err == nil {
 		if detail.Status == consts.CdnDomainStatusStoped {
-			//启用域名
-			err = t.EnableDomain(&types.EnableDomainRequest{Domain: req.Domain})
+			err = t.DeleteDomain(&types.DeleteDomainRequest{Domain: req.Domain})
 			if err != nil {
 				return err
 			}
+		} else if detail.ChannelType != req.ChannelType || detail.AreaCode != req.AreaCode {
+			err = t.DisableDomain(&types.DisableDomainRequest{Domain: req.Domain})
+			if err != nil {
+				return err
+			}
+			err = t.DeleteDomain(&types.DeleteDomainRequest{Domain: req.Domain})
+			if err != nil {
+				return err
+			}
+		} else {
+			return nil
 		}
-		//切换区域
-		err = t.changeDomainArea(req.Domain, detail.AreaCode, req.AreaCode)
-		if err != nil {
-			return err
-		}
-		return nil
 	}
 	request := tencentsdk.NewAddCdnDomainRequest()
 	if req.Sources == nil || len(req.Sources) == 0 {
@@ -535,13 +539,14 @@ func (t *Tencent) ShowDomainDetail(req *types.ShowDomainDetailRequest) (*types.S
 	}
 	domain := res.Response.Domains[0]
 	return &types.ShowDomainDetailResponse{
-		DomainId:   *domain.ResourceId,
-		Domain:     *domain.Domain,
-		Cname:      *domain.Cname,
-		AreaCode:   mapAreaCode(*domain.Area),
-		Status:     getDomainStatus(*domain.Status),
-		CreateTime: utils.DateTimeToTimeStamp(*domain.CreateTime),
-		UpdateTime: utils.DateTimeToTimeStamp(*domain.UpdateTime),
+		DomainId:    *domain.ResourceId,
+		Domain:      *domain.Domain,
+		Cname:       *domain.Cname,
+		ChannelType: serviceTypeToChannelType(*domain.ServiceType),
+		AreaCode:    mapAreaCode(*domain.Area),
+		Status:      getDomainStatus(*domain.Status),
+		CreateTime:  utils.DateTimeToTimeStamp(*domain.CreateTime),
+		UpdateTime:  utils.DateTimeToTimeStamp(*domain.UpdateTime),
 	}, nil
 }
 

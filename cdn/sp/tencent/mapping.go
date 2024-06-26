@@ -51,6 +51,22 @@ func getCdnType(t int64) string {
 	}
 }
 
+// ServiceTypeToChannelType 获取业务类型
+func serviceTypeToChannelType(st string) int64 {
+	switch st {
+	case "web":
+		return consts.ChannelTypeWeb
+	case "download":
+		return consts.ChannelTypeDownload
+	case "media":
+		return consts.ChannelTypeMedia
+	case "hybrid":
+		return consts.ChannelTypeHybrid
+	default:
+		return consts.ChannelTypeWeb
+	}
+}
+
 // ConvertTimeZone 转换时区
 func convertTimeZone(timezone string) string {
 	location, err := time.LoadLocation(timezone)

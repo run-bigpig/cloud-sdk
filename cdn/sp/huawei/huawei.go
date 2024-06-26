@@ -65,18 +65,22 @@ func (h *Huawei) CreateDomain(req *types.CreateDomainRequest) error {
 	detail, err := h.ShowDomainDetail(&types.ShowDomainDetailRequest{Domain: req.Domain})
 	if err == nil {
 		if detail.Status == consts.CdnDomainStatusStoped {
-			//启用域名
-			err = h.EnableDomain(&types.EnableDomainRequest{Domain: req.Domain})
+			err = h.DeleteDomain(&types.DeleteDomainRequest{Domain: req.Domain})
 			if err != nil {
 				return err
 			}
+		} else if detail.ChannelType != req.ChannelType || detail.AreaCode != req.AreaCode {
+			err = h.DisableDomain(&types.DisableDomainRequest{Domain: req.Domain})
+			if err != nil {
+				return err
+			}
+			err = h.DeleteDomain(&types.DeleteDomainRequest{Domain: req.Domain})
+			if err != nil {
+				return err
+			}
+		} else {
+			return nil
 		}
-		//切换区域
-		err = h.changeDomainArea(req.Domain, detail.AreaCode, req.AreaCode)
-		if err != nil {
-			return err
-		}
-		return nil
 	}
 	request := &model.CreateDomainRequest{}
 	listSource := make([]model.Sources, 0)
@@ -513,13 +517,14 @@ func (h *Huawei) ShowDomainDetail(req *types.ShowDomainDetailRequest) (*types.Sh
 		return nil, errors.New("show domain detail error")
 	}
 	return &types.ShowDomainDetailResponse{
-		DomainId:   *res.Domain.Id,
-		Domain:     *res.Domain.DomainName,
-		Cname:      *res.Domain.Cname,
-		Status:     getDomainStatus(*res.Domain.DomainStatus),
-		CreateTime: *res.Domain.UpdateTime,
-		UpdateTime: *res.Domain.UpdateTime,
-		AreaCode:   mapAreaCode(res.Domain.ServiceArea.Value()),
+		DomainId:    *res.Domain.Id,
+		Domain:      *res.Domain.DomainName,
+		Cname:       *res.Domain.Cname,
+		ChannelType: businessTypeToChannelType(*res.Domain.BusinessType),
+		Status:      getDomainStatus(*res.Domain.DomainStatus),
+		CreateTime:  *res.Domain.UpdateTime,
+		UpdateTime:  *res.Domain.UpdateTime,
+		AreaCode:    mapAreaCode(res.Domain.ServiceArea.Value()),
 	}, nil
 }
 

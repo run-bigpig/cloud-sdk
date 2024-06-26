@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/run-bigpig/cloud-sdk/cdn/sp/huawei"
 	"github.com/run-bigpig/cloud-sdk/cdn/sp/tencent"
+	"github.com/run-bigpig/cloud-sdk/cdn/sp/wangsu"
 	"github.com/run-bigpig/cloud-sdk/cdn/types"
 )
 
@@ -36,6 +37,7 @@ type Cdn interface {
 type Config struct {
 	Huawei  huawei.Config
 	Tencent tencent.Config
+	Wangsu  wangsu.Config
 }
 
 func NewCdn(ctx context.Context, config interface{}) Cdn {
@@ -44,6 +46,8 @@ func NewCdn(ctx context.Context, config interface{}) Cdn {
 		return huawei.NewHuaweiSdkClient(ctx, &t)
 	case tencent.Config:
 		return tencent.NewTencentSdkClient(ctx, &t)
+	case wangsu.Config:
+		return wangsu.NewWangsuSdkClient(ctx, &t)
 	default:
 		return nil
 	}
